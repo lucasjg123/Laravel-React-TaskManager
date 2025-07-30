@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { DialogHeader } from '@/components/ui/dialog';
+import { DialogClose, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -8,7 +8,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@radix-ui/react-dialog';
-import { Calendar, CheckCircle, CheckCircle2, ChevronLeft, ChevronRight, List, Pencil, Plus, Search, Trash2, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle, CheckCircle2, ChevronLeft, ChevronRight, List, Pencil, Plus, Search, Trash2, X, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface Task {
@@ -159,7 +159,7 @@ export default function TasksIndex({ tasks, lists, filters, flash }: Props) {
             route('tasks.index'),
             {
                 search: searchTerm,
-                filter: completionFilter,
+                filter: value,
             },
             {
                 preserveState: true,
@@ -207,82 +207,103 @@ export default function TasksIndex({ tasks, lists, filters, flash }: Props) {
 
                     <Dialog open={isOpen} onOpenChange={setIsOpen}>
                         <DialogTrigger>
-                            <Button asChild className="bg-primary text-white shadow-lg hover:bg-primary/90">
+                            <Button asChild className="cursor-pointer bg-primary text-white shadow-lg hover:bg-primary/90">
                                 <span className="inline-flex items-center">
                                     <Plus className="mr-2 h-4 w-4" />
                                     New Task
                                 </span>
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w[425px]">
-                            <DialogHeader>
-                                <DialogTitle className="text-xl">{editingTask ? 'Edit Task' : 'Create New Task'}</DialogTitle>
-                            </DialogHeader>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="title">Title</Label>
-                                    <Input
-                                        id="title"
-                                        value={data.title}
-                                        onChange={(e) => setData('title', e.target.value)}
-                                        required
-                                        className="focus:ring-2 focus:ring-primary"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="description">Description</Label>
-                                    <Textarea
-                                        className="focus:ring-2 focus:ring-primary"
-                                        id="description"
-                                        value={data.description}
-                                        onChange={(e) => setData('description', e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="list_id">List</Label>
-                                    <Select value={data.list_id} onValueChange={(value) => setData('list_id', value)}>
-                                        <SelectTrigger className="focus:ring-2 focus:ring-primary">
-                                            <SelectValue placeholder="Select a list"></SelectValue>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {lists.map((list) => (
-                                                <SelectItem key={list.id} value={list.id.toString()}>
-                                                    {list.title}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="due_date">Due Date</Label>
-                                    <Input
-                                        id="due_date"
-                                        type="date"
-                                        value={data.due_date}
-                                        onChange={(e) => setData('due_date', e.target.value)}
-                                        className="focus:ring-2 focus:ring-primary"
-                                    />
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <input
-                                        type="checkbox"
-                                        id="is_completed"
-                                        checked={data.is_completed}
-                                        onChange={(e) => setData('is_completed', e.target.checked)}
-                                        className="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
-                                    />
-                                    <Label htmlFor="is_completed">Completed</Label>
-                                </div>
-                                <Button type="submit" disabled={processing} className="w-full bg-primary text-white shadow-lg hover:bg-primary/90">
-                                    {editingTask ? 'Update' : 'Create'}
-                                </Button>
-                            </form>
+                        <DialogContent className="fixed inset-0 z-50 flex items-center justify-center">
+                            {/* Fondo oscuro que cubre toda la pantalla */}
+                            <div className="absolute inset-0 z-10 bg-black opacity-80" />
+
+                            {/* Modal con contenido, utilizando 'relative' para posicionar el botón */}
+                            <div className="relative z-20 w-full rounded-lg bg-white p-6 shadow-lg sm:max-w-[425px]">
+                                {/* Botón de cierre (X) en la esquina superior derecha */}
+                                <DialogClose asChild>
+                                    <button
+                                        type="button"
+                                        className="absolute top-4 right-4 cursor-pointer text-gray-500 hover:text-gray-700"
+                                        aria-label="Close"
+                                    >
+                                        <X className="h-5 w-5" />
+                                    </button>
+                                </DialogClose>
+
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl">{editingTask ? 'Edit Task' : 'Create New Task'}</DialogTitle>
+                                </DialogHeader>
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="title">Title</Label>
+                                        <Input
+                                            id="title"
+                                            value={data.title}
+                                            onChange={(e) => setData('title', e.target.value)}
+                                            required
+                                            className="focus:ring-2 focus:ring-primary"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="description">Description</Label>
+                                        <Textarea
+                                            className="focus:ring-2 focus:ring-primary"
+                                            id="description"
+                                            value={data.description}
+                                            onChange={(e) => setData('description', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="list_id">List</Label>
+                                        <Select value={data.list_id} onValueChange={(value) => setData('list_id', value)}>
+                                            <SelectTrigger className="focus:ring-2 focus:ring-primary">
+                                                <SelectValue placeholder="Select a list" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {lists.map((list) => (
+                                                    <SelectItem key={list.id} value={list.id.toString()}>
+                                                        {list.title}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="due_date">Due Date</Label>
+                                        <Input
+                                            id="due_date"
+                                            type="date"
+                                            value={data.due_date}
+                                            onChange={(e) => setData('due_date', e.target.value)}
+                                            className="focus:ring-2 focus:ring-primary"
+                                        />
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            id="is_completed"
+                                            checked={data.is_completed}
+                                            onChange={(e) => setData('is_completed', e.target.checked)}
+                                            className="h-4 w-4 rounded border-gray-300 focus:ring-2 focus:ring-primary"
+                                        />
+                                        <Label htmlFor="is_completed">Completed</Label>
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="w-full cursor-pointer bg-primary text-white shadow-lg hover:bg-primary/90"
+                                    >
+                                        {editingTask ? 'Update' : 'Create'}
+                                    </Button>
+                                </form>
+                            </div>
                         </DialogContent>
                     </Dialog>
                 </div>
 
                 <div className="mb-4 flex flex-col gap-4">
-                    <div className="flex">
+                    <div className="flex gap-4">
                         <form onSubmit={handleSearch} className="relative flex-1">
                             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
                             <Input
@@ -325,7 +346,8 @@ export default function TasksIndex({ tasks, lists, filters, flash }: Props) {
                                             <td className="max-w-[200px] truncate p-4 align-middle">{task.description || 'No description'}</td>
                                             <td className="p-4 align-middle">
                                                 <div className="flex items-center gap-2">
-                                                    <List className="h-4 w-4 text-muted-foreground">{task.list.title}</List>
+                                                    <List className="h-4 w-4 text-muted-foreground" />
+                                                    <span>{task.list.title}</span>
                                                 </div>
                                             </td>
                                             <td className="p-4 align-middle">
@@ -386,7 +408,7 @@ export default function TasksIndex({ tasks, lists, filters, flash }: Props) {
                     {/* pagination*/}
                     <div className="flex items-center justify-between px-2">
                         <div className="text-sm text-muted-foreground">
-                            Showing{tasks.from} to {tasks.to} of {tasks.total} results
+                            Showing {tasks.from} to {tasks.to} of {tasks.total} results
                         </div>
                         <div className="flex items-center space-x-2">
                             <Button

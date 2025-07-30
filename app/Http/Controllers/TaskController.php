@@ -13,16 +13,23 @@ class TaskController extends Controller
      */
     public function index()
     {
+        //Task::with('list') - Esto le dice a Eloquent que cargue también la relación list de cada tarea, en una sola query SQL.
+        //Por eso en React podés hacer directamente: task.list.title
         $query = Task::with('list')->whereHas('list', function ($query) {
+            // whereHas('list') //filtra las tareas  q pertenecen auna lista. Es decir traera solo tareas q esten en una lista
             $query->where('user_id', auth()->id());
         })->orderBy('created_at', 'desc');
 
-        if (request()->has('search')) {
+        if (request()->has('search')) { // si la solicitud HTTP (request()) contiene el parámetro search
             $search = request('search');
+            // La palabra clave USE permite que la variable $search esté disponible dentro de la función anónima(SUBCONSULTA)
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}")
                     ->orWhere('description', 'like', "%{$search}");
             });
+            /*traudccion: SELECT * FROM tasks
+            WHERE title LIKE '%task%'
+            OR description LIKE '%task%'; */
         }
 
         if (request()->has('filter') && request('filter') !== 'all') {
