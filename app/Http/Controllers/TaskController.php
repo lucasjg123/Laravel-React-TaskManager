@@ -24,8 +24,8 @@ class TaskController extends Controller
             $search = request('search');
             // La palabra clave USE permite que la variable $search esté disponible dentro de la función anónima(SUBCONSULTA)
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}")
-                    ->orWhere('description', 'like', "%{$search}");
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             });
             /*traudccion: SELECT * FROM tasks
             WHERE title LIKE '%task%'

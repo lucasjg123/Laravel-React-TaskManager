@@ -144,7 +144,7 @@ export default function TasksIndex({ tasks, lists, filters, flash }: Props) {
             route('tasks.index'),
             {
                 search: searchTerm,
-                filter: completionFilter,
+                filter: completionFilter || 'all',
             },
             {
                 preserveState: true,
