@@ -6,9 +6,16 @@ use Inertia\Inertia;
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\DashboardController;
 
+// Route::get('/', function () {
+//     return Inertia::render('welcome');
+// })->name('home');
+
+// web.php
 Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+    return redirect()->route('login');
+})->name('home'); // 👈 importante
+
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('lists', ListController::class);
